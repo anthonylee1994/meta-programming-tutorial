@@ -129,6 +129,22 @@ module ActiveRecord
       Query.new(self).all
     end
 
+    def self.first
+      Query.new(self).first
+    end
+
+    def self.last
+      Query.new(self).last
+    end
+
+    def self.find(id)
+      all.find { |record| record.id == id }
+    end
+
+    def self.find_by(conditions)
+      Query.new(self, conditions).first
+    end
+
     # 實例方法 - CRUD 操作
     def save
       true # 在這個簡化版本中，總是返回 true
@@ -215,26 +231,45 @@ user.email = 'anthony@example.com'
 puts user.name
 user.save!
 
+puts '--- User.first ---'
+puts User.first
+puts "\n"
+
+puts '--- User.last ---'
+puts User.last
+puts "\n"
+
+puts '--- User.find(1) ---'
+puts User.find(1)
+puts "\n"
+
 puts '--- User.all ---'
 puts User.all
+puts "\n"
 
 puts '--- User.where(age: 25).all ---'
 puts User.where(age: 25).all
+puts "\n"
 
 puts '--- User.find_by_name("Charlie") ---'
 puts User.find_by_name('Charlie')
+puts "\n"
 
 puts '--- User.find_by_age(28) ---'
 puts User.find_by_age(28)
+puts "\n"
 
 puts '--- User.adult (age >= 18) ---'
 puts User.adult.all
+puts "\n"
 
 puts '--- User.senior (age >= 30) ---'
 puts User.senior.all
+puts "\n"
 
 puts '--- User.age_between(25, 30) ---'
 puts User.age_between(25, 30).all
+puts "\n"
 
 puts '--- Chaining: User.adult.where(name: "Alice") ---'
 puts User.adult.where(name: 'Alice').all
