@@ -126,22 +126,27 @@ module ActiveRecord
       Query.new(self, conditions)
     end
 
+    # 實例方法 - 返回所有資料
     def self.all
       Query.new(self).all
     end
 
+    # 實例方法 - 返回第一筆資料
     def self.first
       Query.new(self).first
     end
 
+    # 實例方法 - 返回最後一筆資料
     def self.last
       Query.new(self).last
     end
 
+    # 實例方法 - 根據 ID 查找資料
     def self.find(id)
       all.find { |record| record.id == id }
     end
 
+    # 實例方法 - 根據條件查找第一筆資料
     def self.find_by(conditions)
       Query.new(self, conditions).first
     end
@@ -159,10 +164,12 @@ module ActiveRecord
       false
     end
 
+    # 實例方法 - 是否為新記錄
     def new_record?
       @new_record
     end
 
+    # 實例方法 - 是否已持久化
     def persisted?
       !new_record? && !destroyed?
     end
@@ -273,6 +280,7 @@ module ActiveRecord
 end
 
 class User < ActiveRecord::Base
+  # 定義屬性
   attributes :id, :name, :age, :email
 
   # 定義 scope - 成年人 (年齡 >= 18)
@@ -340,7 +348,7 @@ new_user.save!
 puts "儲存後的用戶總數: #{Database::USERS.length}"
 puts "新用戶是否為新記錄: #{new_user.new_record?}"
 puts "新用戶是否已持久化: #{new_user.persisted?}"
-puts "新用戶 ID: #{new_user.id}"
+puts "新用戶: #{new_user}"
 
 # 測試更新
 new_user.update(age: 26)
