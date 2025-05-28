@@ -82,6 +82,7 @@ module ActiveRecord
     attr_accessor :conditions
 
     def initialize(attributes = {})
+      @new_record = !attributes.has_key?(:id)
       attributes.each do |key, value|
         send("#{key}=", value)
       end
@@ -147,7 +148,23 @@ module ActiveRecord
 
     # 實例方法 - CRUD 操作
     def save
-      true # 在這個簡化版本中，總是返回 true
+      if @new_record
+        create_record
+      else
+        update_record
+      end
+      true
+    rescue StandardError => e
+      puts "Error saving record: #{e.message}"
+      false
+    end
+
+    def new_record?
+      @new_record
+    end
+
+    def persisted?
+      !new_record? && !destroyed?
     end
 
     # 實例方法 - 強制儲存
@@ -167,19 +184,17 @@ module ActiveRecord
 
     # 實例方法 - 刪除資料
     def destroy
-      # 在這個簡化版本中，只是標記為已刪除
-      @destroyed = true
+      if persisted?
+        database_table = Database.const_get("#{self.class.name.upcase}S")
+        database_table.reject! { |record| record[:id] == id }
+        @destroyed = true
+      end
       self
     end
 
     # 實例方法 - 是否已刪除
     def destroyed?
       @destroyed || false
-    end
-
-    # 實例方法 - 是否已儲存
-    def persisted?
-      !destroyed?
     end
 
     # 動態定義 find_by_ 方法
@@ -209,6 +224,51 @@ module ActiveRecord
         instance_exec(*args, &body)
       end
     end
+
+    private
+
+    def create_record
+      # 生成新的 ID
+      existing_ids = Database.const_get("#{self.class.name.upcase}S").map { |record| record[:id] }
+      new_id = existing_ids.empty? ? 1 : existing_ids.max + 1
+
+      # 收集所有屬性
+      record_attributes = {}
+      instance_variables.each do |var|
+        next if var.to_s.start_with?('@new_record') || var.to_s.start_with?('@destroyed')
+
+        attr_name = var.to_s.sub('@', '').to_sym
+        record_attributes[attr_name] = instance_variable_get(var)
+      end
+
+      # 設定 ID
+      record_attributes[:id] = new_id
+      self.id = new_id
+
+      # 添加到資料庫
+      Database.const_get("#{self.class.name.upcase}S") << record_attributes
+      @new_record = false
+    end
+
+    def update_record
+      # 找到現有記錄並更新
+      database_table = Database.const_get("#{self.class.name.upcase}S")
+      record_index = database_table.find_index { |record| record[:id] == id }
+
+      raise "Record with id #{id} not found" unless record_index
+
+      # 收集所有屬性
+      record_attributes = {}
+      instance_variables.each do |var|
+        next if var.to_s.start_with?('@new_record') || var.to_s.start_with?('@destroyed')
+
+        attr_name = var.to_s.sub('@', '').to_sym
+        record_attributes[attr_name] = instance_variable_get(var)
+      end
+
+      # 更新記錄
+      database_table[record_index] = record_attributes
+    end
   end
 end
 
@@ -224,12 +284,6 @@ class User < ActiveRecord::Base
   # 定義 scope - 年齡範圍
   scope :age_between, ->(min, max) { where(age: (min..max)) }
 end
-
-# 使用範例
-user = User.new(name: 'Anthony', age: 28)
-user.email = 'anthony@example.com'
-puts user.name
-user.save!
 
 puts '--- User.first ---'
 puts User.first
@@ -273,3 +327,26 @@ puts "\n"
 
 puts '--- Chaining: User.adult.where(name: "Alice") ---'
 puts User.adult.where(name: 'Alice').all
+
+puts "\n=== 測試持久化功能 ==="
+puts "儲存前的用戶總數: #{Database::USERS.length}"
+
+# 創建並儲存新用戶
+new_user = User.new(name: 'Anthony', age: 31, email: 'anthony@example.com')
+puts "新用戶是否為新記錄: #{new_user.new_record?}"
+puts "新用戶是否已持久化: #{new_user.persisted?}"
+
+new_user.save!
+puts "儲存後的用戶總數: #{Database::USERS.length}"
+puts "新用戶是否為新記錄: #{new_user.new_record?}"
+puts "新用戶是否已持久化: #{new_user.persisted?}"
+puts "新用戶 ID: #{new_user.id}"
+
+# 測試更新
+new_user.update(age: 26)
+puts "更新後年齡: #{User.find(new_user.id).age}"
+
+# 測試刪除
+new_user.destroy
+puts "刪除後的用戶總數: #{Database::USERS.length}"
+puts "用戶是否已刪除: #{new_user.destroyed?}"
