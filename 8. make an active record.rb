@@ -82,7 +82,7 @@ module ActiveRecord
     attr_accessor :conditions
 
     def initialize(attributes = {})
-      @new_record = !attributes.has_key?(:id)
+      @new_record = !attributes.key?(:id)
       attributes.each do |key, value|
         send("#{key}=", value)
       end
