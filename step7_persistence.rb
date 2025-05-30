@@ -115,6 +115,10 @@ module ActiveRecord
 end
 
 # Demo: CRUD operations
+puts '------------------------------------------------------'
+puts "\e[38;5;208mStep 7: CRUD Operations and Persistence\e[0m"
+puts '------------------------------------------------------'
+
 puts '=== Original database size ==='
 puts "Users count: #{Database::USERS.length}"
 

@@ -82,6 +82,10 @@ module ActiveRecord
 end
 
 # Demo: Advanced querying
+puts '------------------------------------------------------'
+puts "\e[38;5;208mStep 4: Query Class for Advanced Filtering\e[0m"
+puts '------------------------------------------------------'
+
 puts '=== Users with age 25 ==='
 User.where(age: 25).all.each { |user| puts user }
 

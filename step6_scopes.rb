@@ -35,6 +35,10 @@ class User < ActiveRecord::Base
 end
 
 # Demo: Using scopes
+puts '------------------------------------------------------'
+puts "\e[38;5;208mStep 6: Scopes for Reusable Query Logic\e[0m"
+puts '------------------------------------------------------'
+
 puts '=== All adult users (age >= 18) ==='
 User.adult.all.each { |user| puts user }
 

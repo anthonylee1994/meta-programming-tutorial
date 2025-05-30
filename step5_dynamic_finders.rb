@@ -28,6 +28,10 @@ module ActiveRecord
 end
 
 # Demo: Dynamic finders
+puts '------------------------------------------------------'
+puts "\e[38;5;208mStep 5: Dynamic Finder Methods with method_missing\e[0m"
+puts '------------------------------------------------------'
+
 puts '=== Find by name using find_by_name ==='
 puts User.find_by_name('Alice')
 

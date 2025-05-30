@@ -13,5 +13,8 @@ module Database
 end
 
 # Demo: Access the mock data
+puts '------------------------------------------------------'
+puts "\e[38;5;208mStep 1: Database Setup with Mock Data\e[0m"
+puts '------------------------------------------------------'
 puts "Database contains #{Database::USERS.length} users"
 puts "First user: #{Database::USERS.first}"

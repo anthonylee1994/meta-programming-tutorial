@@ -235,6 +235,10 @@ class User < ActiveRecord::Base
 end
 
 # Comprehensive demo
+puts '------------------------------------------------------'
+puts "\e[38;5;208mStep 8: Complete ActiveRecord Implementation\e[0m"
+puts '------------------------------------------------------'
+
 puts '=== Complete ActiveRecord Demo ==='
 puts "Users: #{User.all.count}"
 puts "First user: #{User.first}"

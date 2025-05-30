@@ -33,6 +33,9 @@ module ActiveRecord
 end
 
 # Demo: Basic querying
+puts '------------------------------------------------------'
+puts "\e[38;5;208mStep 3: Basic Query Methods\e[0m"
+puts '------------------------------------------------------'
 puts '=== All Users ==='
 User.all.each { |user| puts user }
 

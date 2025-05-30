@@ -54,6 +54,10 @@ class User < ActiveRecord::Base
 end
 
 # Demo: Create and use a user instance
+puts '------------------------------------------------------'
+puts "\e[38;5;208mStep 2: Basic Model Structure with Dynamic Attributes\e[0m"
+puts '------------------------------------------------------'
+
 user = User.new(id: 1, name: 'Alice', age: 30, email: 'alice@example.com')
 
 puts user
