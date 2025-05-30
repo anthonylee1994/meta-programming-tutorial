@@ -25,23 +25,20 @@ module ActiveRecord
       return data.map { |record| @model_class.new(record) } if @conditions.empty?
 
       # Filter data based on conditions
-      filtered_data = data.filter do |record|
+      filtered = data.filter do |record|
         @conditions.all? do |key, value|
           record_value = record[key]
 
           case value
-          when Range
-            value.include?(record_value)
-          when Proc
-            value.call(record_value)
-          else
-            record_value == value
+          when Range then value.include?(record_value)
+          when Proc then value.call(record_value)
+          else record_value == value
           end
         end
       end
 
       # Convert to model instances
-      filtered_data.map { |record| @model_class.new(record) }
+      filtered.map { |record| @model_class.new(record) }
     end
 
     # Get first matching record
@@ -86,17 +83,17 @@ puts '------------------------------------------------------'
 puts "\e[38;5;208mStep 4: Query Class for Advanced Filtering\e[0m"
 puts '------------------------------------------------------'
 
-puts '=== Users with age 25 ==='
+puts 'Users with age 25:'
 User.where(age: 25).all.each { |user| puts user }
 
-puts "\n=== Users with age between 25-30 ==="
+puts "\nUsers with age 25-30:"
 User.where(age: (25..30)).all.each { |user| puts user }
 
-puts "\n=== Users where age > 30 ==="
+puts "\nUsers where age > 30:"
 User.where(age: ->(age) { age > 30 }).all.each { |user| puts user }
 
-puts "\n=== Chaining: Users with name 'Alice' ==="
+puts "\nFirst user named Alice:"
 puts User.where(name: 'Alice').first
 
-puts "\n=== Find by name ==="
+puts "\nFind user named Charlie:"
 puts User.find_by(name: 'Charlie')
