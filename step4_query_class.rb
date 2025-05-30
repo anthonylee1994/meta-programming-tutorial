@@ -25,7 +25,7 @@ module ActiveRecord
       return data.map { |record| @model_class.new(record) } if @conditions.empty?
 
       # Filter data based on conditions
-      filtered_data = data.select do |record|
+      filtered_data = data.filter do |record|
         @conditions.all? do |key, value|
           record_value = record[key]
 
