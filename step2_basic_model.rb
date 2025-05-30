@@ -6,42 +6,27 @@ require_relative 'step1_database_setup'
 module ActiveRecord
   class Base
     def initialize(attributes = {})
-      # Set attributes from the hash
-      attributes.each do |key, value|
-        send("#{key}=", value)
-      end
+      attributes.each { |key, value| send("#{key}=", value) }
     end
 
-    # Display all attributes nicely
     def to_s
-      "#<#{self.class.name} #{attributes.map { |key, value| "#{key}: #{value}" }.join(', ')}>"
+      attrs = attributes.map { |key, value| "#{key}: #{value}" }.join(', ')
+      "#<#{self.class.name} #{attrs}>"
     end
 
-    # Get all attributes as a hash
     def attributes
-      attributes = {}
+      hash = {}
       instance_variables.each do |var|
-        attr_name = var.to_s.sub('@', '')
-        attributes[attr_name] = instance_variable_get(var)
+        name = var.to_s[1..] # Remove the '@' prefix
+        hash[name] = instance_variable_get(var)
       end
-      attributes
+      hash
     end
 
-    # Dynamically define a single attribute with getter and setter
-    def self.attribute(name)
-      define_method(name) do
-        instance_variable_get("@#{name}")
-      end
-
-      define_method("#{name}=") do |value|
-        instance_variable_set("@#{name}", value)
-      end
-    end
-
-    # Dynamically define multiple attributes at once
     def self.attributes(*names)
       names.each do |name|
-        attribute(name)
+        define_method(name) { instance_variable_get("@#{name}") }
+        define_method("#{name}=") { |value| instance_variable_set("@#{name}", value) }
       end
     end
   end
