@@ -3,12 +3,18 @@
 
 require_relative 'step2_basic_model'
 
+class String
+  def pluralize
+    end_with?('y') ? "#{self[0..-2]}ies" : "#{self}s"
+  end
+end
+
 module ActiveRecord
   class Base
     # Get all records from the database
     def self.all
       # Convert class name to database table constant (User -> USERS)
-      table_name = "#{name.upcase}S"
+      table_name = name.pluralize.upcase
       data = Database.const_get(table_name)
 
       # Convert each hash to a model instance
