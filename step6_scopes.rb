@@ -16,22 +16,12 @@ end
 class User < ActiveRecord::Base
   attributes :id, :name, :age, :email
 
-  # Define scope for adults (age >= 18)
-  # This creates a class method User.adult that returns a Query object
-  # The lambda creates a closure that captures the filtering logic
   scope :adult, -> { where(age: ->(age) { age >= 18 }) }
 
-  # Define scope for seniors (age >= 30)
-  # Another reusable query fragment
   scope :senior, -> { where(age: ->(age) { age >= 30 }) }
 
-  # Define scope with parameters for age range
-  # This demonstrates how scopes can accept arguments for dynamic filtering
-  # The lambda parameters (min, max) become available inside the block
   scope :age_between, ->(min, max) { where(age: (min..max)) }
 
-  # Define scope for young people (age < 30)
-  # Shows different filtering logic repackaged as a named scope
   scope :young, -> { where(age: ->(age) { age < 30 }) }
 end
 
