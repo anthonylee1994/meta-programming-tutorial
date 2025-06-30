@@ -1,37 +1,11 @@
 # Step 6: Scopes for Reusable Query Logic
-# This adds scope functionality to define reusable query methods
-#
-# Key metaprogramming concepts:
-# 1. define_singleton_method - creating class methods dynamically
-# 2. instance_exec - executing blocks in a different context
-# 3. Closure capture - blocks remembering their surrounding scope
-# 4. Method chaining with scope composition
 
 require_relative 'step5_dynamic_finders'
 
 module ActiveRecord
   class Base
-    # Define a scope (a reusable query method)
-    # Scopes are named query fragments that can be chained together
-    # This is a powerful metaprogramming technique for creating domain-specific languages (DSLs)
-    #
-    # @param name [Symbol] The name of the scope method to create
-    # @param body [Proc] A block containing the query logic
     def self.scope(name, body)
-      # define_singleton_method creates a method on the class itself (not instances)
-      # This is different from define_method which creates instance methods
-      #
-      # Singleton methods are unique to a specific object (in this case, the class)
-      # Example: When we call User.scope(:adult, ...), we're adding a method
-      # specifically to the User class, not to User instances
       define_singleton_method(name) do |*args|
-        # instance_exec executes the block in the context of the current class
-        # This allows the block to call methods like 'where' as if they were
-        # called directly on the class (User.where(...))
-        #
-        # The *args allows scopes to accept parameters:
-        # scope :age_between, ->(min, max) { where(age: (min..max)) }
-        # User.age_between(25, 30) passes [25, 30] as args
         instance_exec(*args, &body)
       end
     end
