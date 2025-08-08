@@ -1,6 +1,6 @@
 # Meta-programming
 
-Meta-programming is the practice of writing code that **writes or manipulates other code**—or even **modifies itself**—at compile-time or run-time. In simpler terms, it's **programming about programming**.
+Meta-programming is the ability to write code that writes or modifies other code at runtime (or at compile time). In languages like Ruby, you can dynamically **create methods, classes, and modify existing objects while the program is running**.
 
 ---
 
